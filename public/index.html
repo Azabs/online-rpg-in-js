@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+
+    <title>Chronicles of Arn</title>
+  </head>
+  <body>
+
+    <div class="container">
+
+        <h1><i>Chronicles of Arn</i></h1>
+
+        <div class="row">
+
+            <!-- 1ra columna -->
+            <div class="col-3 bg-gradient">
+                <div id="chat-container">
+                    <h2>Chat</h2>
+                    <div id="chat-window">
+                        <div id="output"></div>
+                        <div id="actions"></div>
+                    </div>
+                    <form id="chat-form">
+                        <input type="text" id="username" placeholder="Username" autocomplete="off">
+                        <input type="text" id="message" placeholder="Message" autocomplete="off">
+                        <button id="send">Send</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 2da columna -->
+            <div class="col-6 bg-gradient">
+                <div class="row">
+                    <h2>Mapa</h2>
+                    <table id="map">
+                        <tr>
+                          <th></th>
+                          <th></th> 
+                          <th></th>
+                          <th></th> 
+                          <th></th>
+                          <th></th> 
+                          <th></th>
+                          <th></th> 
+                        </tr>
+                        <tr>
+                            <th></th> 
+                            <th></th>
+                            <th></th> 
+                            <th></th>
+                            <th></th> 
+                            <th></th>
+                            <th></th> 
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th></th> 
+                            <th></th>
+                            <th></th> 
+                            <th></th>
+                            <th></th> 
+                            <th></th>
+                            <th></th> 
+                          </tr>
+                          <tr>
+                              <th></th> 
+                              <th></th>
+                              <th></th> 
+                              <th></th>
+                              <th></th> 
+                              <th></th>
+                              <th></th> 
+                              <th></th>
+                          </tr>
+                          <tr>
+                            <th></th>
+                            <th></th> 
+                            <th></th>
+                            <th></th> 
+                            <th></th>
+                            <th></th> 
+                            <th></th>
+                            <th></th> 
+                          </tr>
+                          <tr>
+                              <th></th> 
+                              <th></th>
+                              <th></th> 
+                              <th></th>
+                              <th></th> 
+                              <th></th>
+                              <th></th> 
+                              <th></th>
+                          </tr>
+                          <tr>
+                            <th></th>
+                            <th></th> 
+                            <th></th>
+                            <th></th> 
+                            <th></th>
+                            <th></th> 
+                            <th></th>
+                            <th></th> 
+                          </tr>
+                          <tr>
+                              <th></th> 
+                              <th></th>
+                              <th></th> 
+                              <th></th>
+                              <th></th> 
+                              <th></th>
+                              <th></th> 
+                              <th></th>
+                          </tr>
+                    </table>
+                    <p>Te movés con las flechitas</p>
+                </div>
+                    <h2>Habilidades</h2>
+                <div class="row">
+                </div>
+            </div>
+
+            <!-- 3ra columna -->
+            <div class="col-3 bg-gradient">
+                <div class="row">
+
+                    <!-- Tabs Equipo/Inventario -->
+                    <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
+
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="equipment-tab" data-bs-toggle="tab" data-bs-target="#equipment" type="button" role="tab" aria-controls="equipment" aria-selected="true">Equipamento</button>
+                        </li>
+                        
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="inventory-tab" data-bs-toggle="tab" data-bs-target="#inventory" type="button" role="tab" aria-controls="inventory" aria-selected="false">Inventario</button>
+                        </li>
+                    </ul>
+
+                    <!-- Contenido Equipo/Inventario -->
+                    <div class="tab-content" id="myTabContent">
+
+                        <div class="tab-pane fade show active" id="equipment" role="tabpanel" aria-labelledby="equipment-tab">
+                            <img src="img/equipment-placeholder.png" height="400 px">
+                        </div>
+
+                        <div class="tab-pane fade" id="inventory" role="tabpanel" aria-labelledby="inventory-tab">
+                            <img src="img/inventory-placeholder.jpg" height="400 px">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <h2>Estadísticas</h2>
+                    <img src="img/stats-placeholder.jpg">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/chat.js"></script>
+  </body>
+</html>
