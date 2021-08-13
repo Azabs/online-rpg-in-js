@@ -1,9 +1,19 @@
+var mapArray=[
+    [1,1,0,0,0,0,1,1],
+    [1,0,0,0,0,0,0,1],
+    [0,0,0,1,1,0,0,0],
+    [0,1,0,2,2,0,1,0],
+    [0,1,0,2,2,0,1,0],
+    [0,0,0,1,1,0,0,0],
+    [1,0,0,0,0,0,0,1],
+    [1,1,0,0,0,0,1,1],
+]
+
 //Proceso:
 //Se inicia el servidor y se envia todo el contenido del front end al navegador
 //Cuando el navegador se inicia tambien se carga el js del socket.io
 //El cliente automaticamente se coencta al servidor
 //Cuando un cliente se conecta se dispara el evento connection
-
 
 const path = require('path'); //Modulo de express para usar rutas
 const express = require('express'); //Require de express
@@ -15,7 +25,7 @@ app.set('port', process.env.PORT || 3000); //Usa el puerto configurado o si no h
 //static files(Envio todos los archivos estaticos del front end al navegador, se llaman estaticos porque por lo general no cambian)
 //__dirname devuelve la ruta del proyecto
 //path.join sirve para concatenar y agrega una barra / o una contrabarra \ dependiendo de si estas en linux o en windows
-app.use(express.static(path.join(__dirname, 'public_html'))) //Digo que nuesta aplicacion va a usar un modulo de express llamado static para enviar archivos estaticos, lo que se va a enviar es la ruta que le digas, en este caso la carpeta public
+app.use(express.static(path.join(__dirname, 'public'))) //Digo que nuesta aplicacion va a usar un modulo de express llamado static para enviar archivos estaticos, lo que se va a enviar es la ruta que le digas, en este caso la carpeta public
 
 //Inicio usando el puerto configurado en app y lo guardo en la variable server una vez inicializado
 const server = app.listen(app.get('port'), () => {
@@ -40,4 +50,41 @@ io.on('connection', (socket) => { //socket es la variable de chat.js
     socket.on('chat:typing', (data) => {
         socket.broadcast.emit('chat:typing', data); //Envio los datos a todos exepto a mi
     });
+
+    //Cuando un jugador se conecta
+    socket.on('player:onConnection', (data) => {
+        //Emito un mensaje en el chat a todos los sockets, con el nombre del jugador
+        io.sockets.emit('server:message', {
+            username: '<i style="color:' + data.player.color + '">' + data.player.name + '</i>', 
+            message: '<i>Se ha conectado</i>'
+        });
+
+        do{
+            var x = Math.floor((Math.random() * 7) + 0);
+            var y = Math.floor((Math.random() * 7) + 0);
+            console.log(x);
+        }while(mapArray[x][y] != 0);
+
+        mapArray[x][y] = data.player.name;
+
+        data.player.position.x = x//asigno la posición x inicial
+        data.player.position.y = y; //asigno la posición y inicial
+        data.player.color = 'rgb(' + Math.floor((Math.random() * 255) + 0) + ',' + Math.floor((Math.random() * 255) + 0) + ',' + Math.floor((Math.random() * 255) + 0) + ')'; //asigno el color del jugador
+
+        io.sockets.emit('server:newPlayerPosition', {
+            player: data.player,
+            map: mapArray
+        });
+    })
+
+    //Cuando un jugador se mueve
+    socket.on('player', (data) => {
+        //se actualiza la posición nueva del jugador en la matriz
+        mapArray = data.map;
+
+        io.sockets.emit('server:newPlayerPosition', {
+            player: data.player,
+            map: mapArray
+        });
+    })
 });
