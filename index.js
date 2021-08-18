@@ -1,3 +1,23 @@
+//Clase para los jugadores
+//Esto es una mierda, hay que arreglarla después
+class Player{
+    
+    constructor(name){
+        this.name = name;
+    }
+
+    color;
+    position = {
+        x: 0,
+        y: 0
+    };
+}
+
+//Esta matriz ES EL MAPA, lo que significa que si se cambian 
+//los números de la matriz, también va a cambiar el mapa en la página.
+//0 = el jugador y los proyectiles pueden cruzar esta celda
+//1 = el jugador y los proyectiles NO pueden cruzar esta celda
+//2 = el jugador no puede cruzar esta celda pero los proyectiles SI
 var mapArray=[
     [1,1,0,0,0,0,1,1],
     [1,0,0,0,0,0,0,1],
@@ -8,6 +28,10 @@ var mapArray=[
     [1,0,0,0,0,0,0,1],
     [1,1,0,0,0,0,1,1],
 ]
+
+var players = [];//Array donde se guardan los jugadores conectados
+var playerSocketID = [];
+var connectedPlayers = 0;
 
 //Proceso:
 //Se inicia el servidor y se envia todo el contenido del front end al navegador
@@ -53,38 +77,82 @@ io.on('connection', (socket) => { //socket es la variable de chat.js
 
     //Cuando un jugador se conecta
     socket.on('player:onConnection', (data) => {
-        //Emito un mensaje en el chat a todos los sockets, con el nombre del jugador
-        io.sockets.emit('server:message', {
-            username: '<i style="color:' + data.player.color + '">' + data.player.name + '</i>', 
-            message: '<i>Se ha conectado</i>'
-        });
 
-        do{
-            var x = Math.floor((Math.random() * 7) + 0);
-            var y = Math.floor((Math.random() * 7) + 0);
-            console.log(x);
-        }while(mapArray[x][y] != 0);
+        var usedName = false;
+        var i = 0;
 
-        mapArray[x][y] = data.player.name;
+        while(usedName==false && i < players.length){
+            if(players[i].name == data.name)
+                usedName = true;
+            
+            i++;
+        }
 
-        data.player.position.x = x//asigno la posición x inicial
-        data.player.position.y = y; //asigno la posición y inicial
-        data.player.color = 'rgb(' + Math.floor((Math.random() * 255) + 0) + ',' + Math.floor((Math.random() * 255) + 0) + ',' + Math.floor((Math.random() * 255) + 0) + ')'; //asigno el color del jugador
+        if(!usedName){
+            var player = new Player(data.name);
 
-        io.sockets.emit('server:newPlayerPosition', {
-            player: data.player,
-            map: mapArray
-        });
+            playerSocketID[connectedPlayers] = socket.id;
+            players[connectedPlayers] = player;
+            console.log('Nombre: ' + players[connectedPlayers].name + ' Index: ' + connectedPlayers);
+            connectedPlayers++;
+
+            do{
+                var x = Math.floor((Math.random() * 7) + 0);
+                var y = Math.floor((Math.random() * 7) + 0);
+                console.log(x + ' ' + y);
+            }while(mapArray[x][y] != 0);
+
+            mapArray[x][y] = player.name;
+
+            player.position.x = x//asigno la posición x inicial
+            player.position.y = y; //asigno la posición y inicial
+            player.color = 'rgb(' + Math.floor((Math.random() * 255) + 0) + ',' + Math.floor((Math.random() * 255) + 0) + ',' + Math.floor((Math.random() * 255) + 0) + ')'; //asigno el color del jugador
+
+            //Emito un mensaje en el chat a todos los sockets, con el nombre del jugador
+            io.sockets.emit('server:message', {
+                username: '<i style="color:' + player.color + '">' + player.name + '</i>', 
+                message: '<i>Se ha conectado</i>'
+            });
+
+            io.sockets.emit('server:createNewPlayer', {
+                index: connectedPlayers,
+                players: players,
+                map: mapArray
+            });
+        }
+        else{
+            //Decirle al cliente que elija otro nombre
+            console.log('Elegí otro nombre que ese ya está usado');
+        }
     })
 
     //Cuando un jugador se mueve
-    socket.on('player', (data) => {
+    socket.on('player:move', (data) => {
+
+        players[data.index].position.x = data.position.x;
+        players[data.index].position.y = data.position.y;
+
         //se actualiza la posición nueva del jugador en la matriz
         mapArray = data.map;
 
         io.sockets.emit('server:newPlayerPosition', {
-            player: data.player,
             map: mapArray
         });
     })
+
+    socket.on("disconnect", () => {
+
+        for(var i = 0 ; i < playerSocketID.length - 1 ; i++){
+            if(socket.id == playerSocketID[i]){
+                mapArray[players[i].position.x][players[i].position.y] = 0;
+                players[i] = null;
+            }
+        }
+
+        io.sockets.emit('server:playerDisconnected', {
+            players: players,
+            map: mapArray
+        });
+        console.log('se desconectó ' + socket.id);
+    });
 });
